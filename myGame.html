@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="static/vue.js"></script>
+</head>
+<body>
+<div id="main" tabIndex="1" @keydown="heroDo" @keyup="keyuped = true" style="overflow: hidden">
+    <div v-show="state==0">
+        <div class="bg">
+            <img src="static/logo.png" alt="">
+        </div>
+        <div class="buttonStart button" @click="start"></div>
+        <div class="buttonOut button" onclick="window.close();"></div>
+    </div>
+    <div v-show="state==1" >
+        <div class="bg">
+            <img src="static/back.png" alt="">
+        </div>
+        <div class="fg">
+            <div class="head"  style="padding-top:40px;box-sizing: border-box;position: relative">
+                <ul>
+                    <li v-for="d in heroBlood" style="float: left;list-style: none">
+                        <img src="static/blood.png" alt="">
+                    </li>
+                </ul>
+                <span style="float: right;margin-right: 50px;">stage:{{level}}</span>
+                <span style="float: right;margin-right: 10px;">钥匙:{{heroKey?'1':'0'}}</span>
+                <span class="back" @click="state=0">返回主页</span>
+            </div>
+            <div class="body">
+                <div v-for="(r,i) in arr2D" class="row">
+                    <div v-for="(c,j) in r" class="cell">
+                        <div v-show="c.type == 0">
+                        </div>
+                        <div v-show="c.type == 1">
+                            <img src="static/brick.png" alt="">
+                        </div>
+                        <div v-show="c.type == 2">
+                            <img src="static/enemy.png" alt="">
+                        </div>
+                        <div v-show="c.type == 3">
+                            <img src="static/award.png" alt="">
+                        </div>
+                        <div v-show="c.type == 4">
+                            <img src="static/key.png" alt="">
+                        </div>
+
+                        <div v-show="c.type == 10">
+                            <img src="static/doorclose.png" alt="">
+                        </div>
+                        <div v-show="c.type == 11">
+                            <img src="static/dooropen.png" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="hero" :style="heroPositionStyle">
+
+
+                    <div class="heroleft" v-show="heroDeg == 1">
+                        <div v-show="heroHit ==0">
+                            <div v-show="heroAction == 0">
+                                <img src="static/heroleft0.png" alt="">
+                            </div>
+                            <div v-show="heroAction == 1">
+                                <img src="static/heroleft1.png" alt="">
+                            </div>
+                            <div v-show="heroAction == 2">
+                                <img src="static/heroleft2.png" alt="">
+                            </div>
+                            <div v-show="heroAction == 3">
+                                <img src="static/heroleft3.png" alt="">
+                            </div>
+
+                        </div>
+                        <div v-show="heroHit ==1">
+                            <img src="static/hit1.png" alt="">
+                        </div>
+                    </div>
+                    <div class="heroup" v-show="heroDeg == 2">
+                        <div v-show="heroHit ==0">
+                            <div v-show="heroAction == 0">
+                                <img src="static/heroup0.png" alt="">
+                            </div>
+                            <div v-show="heroAction == 1">
+                                <img src="static/heroup1.png" alt="">
+                            </div>
+                            <div v-show="heroAction == 2">
+                                <img src="static/heroup2.png" alt="">
+                            </div>
+                            <div v-show="heroAction == 3">
+                                <img src="static/heroup3.png" alt="">
+                            </div>
+                        </div>
+
+                        <div v-show="heroHit ==1">
+                            <img src="static/hit2.png" alt="">
+                        </div>
+                    </div>
+                    <div class="heroright" v-show="heroDeg == 3">
+                        <div v-show="heroHit ==0">
+                            <div v-show="heroAction == 0">
+                                <img src="static/heroright0.png" alt="">
+                            </div>
+                            <div v-show="heroAction == 1">
+                                <img src="static/heroright1.png" alt="">
+                            </div>
+                            <div v-show="heroAction == 2">
+                                <img src="static/heroright2.png" alt="">
+                            </div>
+                            <div v-show="heroAction == 3">
+                                <img src="static/heroright3.png" alt="">
+                            </div>
+                        </div>
+
+                        <div v-show="heroHit ==1">
+                            <img src="static/hit3.png" alt="">
+                        </div>
+                    </div>
+                    <div class="herodown" v-show="heroDeg == 4">
+                        <div v-show="heroHit ==0">
+                            <div v-show="heroAction == 0">
+                                <img src="static/herodown0.png" alt="">
+                            </div>
+                            <div v-show="heroAction == 1">
+                                <img src="static/herodown1.png" alt="">
+                            </div>
+                            <div v-show="heroAction == 2">
+                                <img src="static/herodown2.png" alt="">
+                            </div>
+                            <div v-show="heroAction == 3">
+                                <img src="static/herodown3.png" alt="">
+                            </div>
+                        </div>
+                        <div v-show="heroHit ==1">
+                            <img src="static/hit0.png" alt="">
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+        <div v-show="state==2">
+            <div class="bg">
+                <img src="static/gameover.png" alt="" style="width: 100%" @click="state=0">
+            </div>
+        </div>
+
+    </div>
+
+</body>
+<style>
+    #main {
+        width: 800px;
+        height: 600px;
+        margin: 0 auto;
+    }
+
+    #main > div {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    #main .bg {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 0;
+    }
+
+    .button {
+        background: #000;
+        width: 206px;
+        height: 67px;
+        position: absolute;
+        top: 256px;
+        left: 297px;
+        border-radius: 5px;
+        opacity: 0.1;
+        cursor: pointer;
+
+    }
+    .button:hover {
+        opacity: 0;
+    }
+
+    .buttonOut {
+        top: 390px;
+    }
+
+    .hero {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 80px;
+        height: 80px;
+    }
+
+    /*游戏中*/
+    .fg {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+    }
+
+    .head {
+        width: 100%;
+        height: 120px;
+    }
+
+    .body {
+        position: relative;
+    }
+
+    .row {
+        height: 80px;
+    }
+
+    .cell {
+        height: 80px;
+        width: 80px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .back {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer
+    }
+    .back:hover{
+        color:red;
+    }
+</style>
+<script>
+    var vm = new Vue({
+        el: '#main',
+        data: {
+            arr2D: [//type 空, 墙,怪,血,钥匙
+                [{type:0,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},],
+                [{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},],
+                [{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},],
+                [{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},],
+                [{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},],
+                [{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},{type:1,blood:1,atk:1},],
+            ],
+            arr2DData: [],//游戏生成数据记录藏在砖后面的物体
+            state: 0,//开始,游戏中,gameOver
+            cellState: 2,//砖,怪,血,钥匙,
+
+            heroDeg: 4,//方向
+            heroAction: 0,//动作
+            heroHit: 0,//攻击
+            keyuped:true,//防止按住按键不松手抽搐
+            heroPosition:[0,0],
+            heroPositionStyle:{
+                top:'0px',
+                left:'0px',
+            },
+            heroBlood:5,//英雄血量
+            heroKey:false,//有没有拿到钥匙
+            level:1,
+        },
+        created: function () {
+            let self = this;
+            setInterval(function () {
+                self.heroAction = (self.heroAction + 1) % 4;
+
+            }, 200)
+
+        },
+        watch:{
+            heroPosition:{
+              handler: function(){
+                      this.heroPositionStyle.top=this.heroPosition[0]*80+'px';
+                      this.heroPositionStyle.left=this.heroPosition[1]*80+'px';
+              },
+                deep:true,
+            },
+
+        },
+        methods: {
+            start: function () {
+                this.state = 1;
+                this.levelInit(1);
+            },
+            heroDo: function (e) {//按键触发
+                if(this.keyuped){
+                    this.keyuped = false;
+                    let self = this
+                    if (e.keyCode == 65) {
+                        self.heroHit = 1;
+                        setTimeout(function(){
+                            self.heroHit = 0;
+                            self.hit();
+                        },120);
+                        return;
+                    }
+
+                    if (e.keyCode == 37) {
+                        this.heroDeg = 1
+                        this.heroMoveGo(1)//左
+
+                    }
+                    if (e.keyCode == 38) {
+                        this.heroDeg = 2
+                        this.heroMoveGo(2)//上
+
+                    }
+                    if (e.keyCode == 39) {
+                        this.heroDeg = 3
+                        this.heroMoveGo(3)//右
+
+                    }
+                    if (e.keyCode == 40) {
+                        this.heroDeg = 4
+                        this.heroMoveGo(4)//下
+
+                    }
+                }
+
+            },
+            heroMoveGo: function (str) {//移动
+                let top = this.heroPosition[0];
+                let left = this.heroPosition[1];
+                if(str ==1){
+                    left--;
+                }
+                if(str ==2){
+                    top--
+                }
+                if(str ==3){
+                    left++
+                }
+                if(str ==4){
+                    top++
+                }
+
+                if(left<0||top<0||left>9||top>5){//出界
+                    return;
+                }
+                if(this.arr2D[top][left].type==1||this.arr2D[top][left].type==2){//墙或怪不能走
+                    return;
+                }
+                if(this.arr2D[top][left].type==3){//吃血
+                    this.heroBlood++;
+                    if(this.heroBlood>10){this.heroBlood=10}
+                    this.arr2D[top][left].type=0;
+                }
+                if(this.arr2D[top][left].type==4){//吃钥匙
+                    this.heroKey=true;
+                    this.arr2D[top][left].type=0;
+                    this.arr2D[5][9].type=11;
+                }
+                this.heroPosition = [top,left]
+                if(this.heroKey&&top==5&&left==9){
+                    this.levelInit(this.level++)
+                }
+            },
+            hit:function(){
+                let deg = this.heroDeg;
+                let top = this.heroPosition[0];
+                let left = this.heroPosition[1];
+                if(deg ==1){
+                    left--;
+                }
+                if(deg ==2){
+                    top--
+                }
+                if(deg ==3){
+                    left++
+                }
+                if(deg ==4){
+                    top++
+                }
+                if(this.arr2D[top][left].type==2){//怪
+                    this.arr2D[top][left].blood--;
+                    this.heroBlood = this.heroBlood-this.arr2D[top][left].atk;
+                    if(this.arr2D[top][left].blood==0){
+                        this.arr2D[top][left].type=0;
+                    }
+                    if(this.heroBlood<0||this.heroBlood== 0){
+                        this.state = 2;
+                    }
+
+                }
+                if(this.arr2D[top][left].type==1){//墙
+                    if(this.arr2DData[top][left]==0){
+                        this.arr2D[top][left].type=0;
+                    }else{
+                        this.arr2D[top].splice(left,1,this.arr2DData[top][left])
+                    }
+
+
+                }
+            },
+            levelInit:function(lv){
+
+                let enemy = 9+lv;
+                let blood = 5;
+                let key = 1;
+                let air = 58 - enemy - blood - key;
+                this.arr2DData = [];
+                for(let i=0;i<6;i++){//清空数据数组
+                    this.arr2DData.push([]);
+                    for(let j=0;j<10;j++){
+                        this.arr2DData[i].push([0]);
+                    }
+                }
+
+                for(let i=0;i<6;i++){//全变回砖块
+                    for(let j=0;j<10;j++){
+                        if(i==0&&j==0){
+                            this.arr2D[i][j].type=0;
+                        }
+                        else if(i==5&&j==9){
+                            this.arr2D[i][j].type=10;
+                        }
+                        else{
+                            this.arr2D[i][j].type=1;
+                        }
+
+                    }
+                }
+
+
+                for(let i=enemy;i>0;){
+                    let r = Math.floor(Math.random()*6)
+                    let c = Math.floor(Math.random()*10)
+                    if(this.arr2DData[r][c]==0){
+                        this.arr2DData[r][c] = {type:2,blood:1,atk:1};
+                        i--;
+                    }
+                }
+
+                for(let i=blood;i>0;){
+                    let r = Math.floor(Math.random()*6)
+                    let c = Math.floor(Math.random()*10)
+                    if(this.arr2DData[r][c]==0){
+                        this.arr2DData[r][c] = {type:3,blood:1,atk:1};
+                        i--;
+                    }
+                }
+                for(let i=key;i>0;){
+                    let r = Math.floor(Math.random()*6)
+                    let c = Math.floor(Math.random()*10)
+                    if(this.arr2DData[r][c]==0&&!(r==0&&c==0||r==5&&c==9)){
+                        this.arr2DData[r][c] = {type:4,blood:1,atk:1};
+                        i--;
+                    }
+                }
+
+                this.heroPosition=[0,0];
+                this.heroKey = false;
+            },
+        }
+    })
+</script>
+</html>
