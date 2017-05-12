@@ -7,29 +7,33 @@
 </head>
 <body>
 <div id="main" tabIndex="1" @keydown="heroDo" @keyup="keyuped = true" style="overflow: hidden">
-    <div v-show="state==0">
+    <div v-show="state==0"><!---------------开始画面-------------------------------------------------->
+
         <div class="bg">
             <img src="static/logo.png" alt="">
         </div>
         <div class="buttonStart button" @click="start"></div>
         <div class="buttonOut button" onclick="window.close();"></div>
     </div>
-    <div v-show="state==1" >
+    <div v-show="state==1"><!---------------游戏中画面-------------------------------------------------->
+
         <div class="bg">
             <img src="static/back.png" alt="">
         </div>
         <div class="fg">
-            <div class="head"  style="padding-top:40px;box-sizing: border-box;position: relative">
+            <div class="head" style="padding-top:40px;box-sizing: border-box;position: relative">
                 <ul>
                     <li v-for="d in heroBlood" style="float: left;list-style: none">
                         <img src="static/blood.png" alt="">
                     </li>
                 </ul>
-                <span style="float: right;margin-right: 50px;">stage:{{level}}</span>
+                <span style="float: right;margin-right: 50px;">level:{{level}}</span>
                 <span style="float: right;margin-right: 10px;">钥匙:{{heroKey?'1':'0'}}</span>
                 <span class="back" @click="state=0">返回主页</span>
+                <p style="position: absolute;top:-5px;left:5px;">上下左右控制方向,a键攻击砖块和怪,获得钥匙后,关卡门打开,可进入下一关</p>
             </div>
             <div class="body">
+                <!----------------背景格子-------------------------------------------------->
                 <div v-for="(r,i) in arr2D" class="row">
                     <div v-for="(c,j) in r" class="cell">
                         <div v-show="c.type == 0">
@@ -144,13 +148,33 @@
 
         </div>
     </div>
-        <div v-show="state==2">
-            <div class="bg">
-                <img src="static/gameover.png" alt="" style="width: 100%" @click="state=0">
-            </div>
+    <div v-show="state==2"><!---------------游戏结束画面-------------------------------------------------->
+        <div class="bg">
+            <img src="static/gameover.png" alt="" style="width: 100%" @click="state=0">
         </div>
-
     </div>
+    <div v-show="state==3"><!---------------游戏通关画面-------------------------------------------------->
+        <div class="bg">
+            <img src="static/succ.png" alt="" style="width: 100%" @click="state=0">
+        </div>
+    </div>
+    <audio id="audiosucc">
+        <source src="./static/succ.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="audioblood">
+        <source src="./static/blood.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="audiohiti">
+        <source src="./static/hiti.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="audiopass">
+        <source src="./static/pass.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+    </audio>
+</div>
 
 </body>
 <style>
@@ -351,21 +375,42 @@
                     return;
                 }
                 if(this.arr2D[top][left].type==3){//吃血
+                    let audio = document.querySelector('#audioblood');
+                    audio.currentTime = 0;
+                    audio.play();
                     this.heroBlood++;
                     if(this.heroBlood>10){this.heroBlood=10}
                     this.arr2D[top][left].type=0;
                 }
                 if(this.arr2D[top][left].type==4){//吃钥匙
+                    let audio = document.querySelector('#audioblood');
+                    audio.currentTime = 0;
+                    audio.play();
                     this.heroKey=true;
                     this.arr2D[top][left].type=0;
                     this.arr2D[5][9].type=11;
                 }
                 this.heroPosition = [top,left]
                 if(this.heroKey&&top==5&&left==9){
+
+
+                    if(this.level==2){
+                        this.state=3;
+                        let audio = document.querySelector('#audiosucc');
+                        audio.currentTime = 0;
+                        audio.play();
+                        return;
+                    }
+                    let audio = document.querySelector('#audiopass');
+                    audio.currentTime = 0;
+                    audio.play();
                     this.levelInit(this.level++)
+
                 }
             },
             hit:function(){
+                let audio = document.querySelector('#audiohiti');
+
                 let deg = this.heroDeg;
                 let top = this.heroPosition[0];
                 let left = this.heroPosition[1];
@@ -382,6 +427,8 @@
                     top++
                 }
                 if(this.arr2D[top][left].type==2){//怪
+                    audio.currentTime = 0;
+                    audio.play();
                     this.arr2D[top][left].blood--;
                     this.heroBlood = this.heroBlood-this.arr2D[top][left].atk;
                     if(this.arr2D[top][left].blood==0){
@@ -393,6 +440,8 @@
 
                 }
                 if(this.arr2D[top][left].type==1){//墙
+                    audio.play();
+                    audio.currentTime = 0;
                     if(this.arr2DData[top][left]==0){
                         this.arr2D[top][left].type=0;
                     }else{
