@@ -278,7 +278,6 @@
             ],
             arr2DData: [],//游戏生成数据记录藏在砖后面的物体
             state: 0,//开始,游戏中,gameOver
-            cellState: 2,//砖,怪,血,钥匙,
 
             heroDeg: 4,//方向
             heroAction: 0,//动作
@@ -314,6 +313,9 @@
         methods: {
             start: function () {
                 this.state = 1;
+                this.heroBlood = 5;
+                this.level = 1;
+                this.heroKey = false;
                 this.levelInit(1);
             },
             heroDo: function (e) {//按键触发
